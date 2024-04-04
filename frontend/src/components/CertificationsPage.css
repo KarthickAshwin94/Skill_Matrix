@@ -1,0 +1,57 @@
+.certifications-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.certifications-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.certifications-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.certifications-container form div {
+  margin-bottom: 20px;
+}
+
+.certifications-container label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.certifications-container input[type="text"],
+.certifications-container input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.certifications-container input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.certifications-container button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.certifications-container button:hover {
+  background-color: #0056b3;
+}

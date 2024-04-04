@@ -1,0 +1,64 @@
+.projects-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .projects-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .projects-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .projects-container form div {
+    margin-bottom: 20px;
+  }
+  
+  .projects-container label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  .projects-container input[type="text"],
+  .projects-container input[type="date"],
+  .projects-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .projects-container input[type="text"]:read-only {
+    background-color: #f0f0f0;
+  }
+  
+  .projects-container input[type="text"]:read-only,
+  .projects-container input[type="date"]:read-only {
+    cursor: not-allowed;
+  }
+  
+  .projects-container button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .projects-container button:hover {
+    background-color: #0056b3;
+  }
+  
