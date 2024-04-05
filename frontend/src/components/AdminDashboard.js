@@ -18,10 +18,13 @@ const AdminDashboard = () => {
       alert("Unable to register!")
     }
   };
-
   const makeUserApprover = async (username) => {
     try {
-      await axios.put(`http://localhost:5000/make-approver/${username}`);
+      
+      // Send a PUT request to the backend API endpoint with the username
+      await axios.post(`http://localhost:5000/make-approver/${username}`);
+      console.log("This is nice!")
+      console.log("Entered the function");
       alert('User is now an approver');
       // You can add logic to update the UI or display a success message
     } catch (error) {
@@ -29,6 +32,8 @@ const AdminDashboard = () => {
       alert('Failed to make user an approver');
     }
   };
+  
+  
 
   return (
     <div className="admin-dashboard-container">

@@ -11,22 +11,25 @@ const LoginPage = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        console.log(username,password);
         try {
             const response = await axios.post("http://localhost:5000/login", { username: username,  password: password });
-            console.log('Response:', response); // Log the response
-            const user_type = response.data.user_type; // Assuming response contains user data including user_type
-    
-            console.log("res", response.data.user_type)
-            if (user_type === 'admin') {
-                navigate('/admin');
-            } else if (user_type === 'user') {
-                navigate('/user');
+            const user_type = response.data.user_type;
+            // Inside handleLogin function
+        if (user_type === 'user') {
+         // Set the username state
+        setUsername(username);
+        // Navigate to user dashboard
+        navigate('/user', { state: { username } });
+         }
+             else if (user_type === 'user') {
+                // Pass username as state when navigating to UserDashboard
+                navigate('/user', { state: { username: username } });
             }
         } catch (error) {
             console.error('Login failed:', error.response.data.message);
         }
     };
+    
     
     return (
         <>

@@ -143,7 +143,6 @@ console.log(token)
       if (!user) {
           return res.status(404).json({ message: 'User not found' });
       }
-console.log("im here")
       // Update the user's password
       user.password = hashPassword(newPassword); // Assuming hashPassword function hashes the password
       await user.save();
@@ -157,24 +156,15 @@ console.log("im here")
 });
 
 
-
-// Backend API Endpoint to update is_approver column
-app.put('/make-approver/:username', async (req, res) => {
+app.post(`/make-approver/:username`, async (req, res) => {
   const { username } = req.params;
 
   try {
-    // Find the user by username in the database
-    const user = await User.findOne({ username });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Update the is_approver column to true
-    user.is_approver = true;
-    await user.save();
-
-    // Respond with success message
+    // Execute a raw SQL query to update the is_approver column
+    await pool.query('UPDATE accounts SET is_approver = $1 WHERE username = $2', [true, username]);
+    
+    console.log('User is now an approver:', username);
+  
     return res.status(200).json({ message: 'User is now an approver' });
   } catch (error) {
     console.error('Error making user an approver:', error);
@@ -184,11 +174,36 @@ app.put('/make-approver/:username', async (req, res) => {
 
 
 
+//api to insert skills for each user in skills table
+app.post('/add-skill', async (req, res) => {
+  try {
+    console.log(req.body)
+    const { technologyName, proficiency, project, isApproved } = req.body;
+    const username = 'arjun'
+
+    // Check if any required field is missing
 
 
+    if (!username && !technologyName && !proficiency && !isApproved) {
+      console.log("in this")
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+    else
+    {
+          // Insert skill data into the skills table
+    const query = `
+    INSERT INTO skills (username, technology, proficiency, projects_worked, is_approved)
+    VALUES ($1, $2, $3, $4, $5)`;
+  await pool.query(query, [username, technologyName, proficiency, project, isApproved]);
 
+  res.status(201).json({ message: 'Skill added successfully' });
+    }
 
-
+  } catch (error) {
+    console.error('Error adding skill:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 const port = 5000;
 
@@ -197,28 +212,3 @@ app.listen(port, () => {
 });
 
 
-
-/*   app.post('/forgot-password', async (req, res) => {
-    const { email } = req.body;
-
-    try {
-        // Generate a random token (you can use crypto or any library for this)
-        const token = generateRandomToken();
-
-        // Send the reset password email
-        await transporter.sendMail({
-            from: 'karthickashwin423@gmail.com',
-            to: email,
-            subject: 'Reset Your Password',
-            text: `To reset your password, click on the following link: http://localhost:3000/resetpassword/${token}`
-        });
-
-        // Respond with success message
-        res.status(200).json({ message: 'Reset password email sent. Please check your email.' });
-    } catch (error) {
-        console.error('Failed to send reset password email:', error);
-        res.status(500).json({ message: 'Failed to send reset password email. Please try again later.' });
-    }
-});
-
-*/
