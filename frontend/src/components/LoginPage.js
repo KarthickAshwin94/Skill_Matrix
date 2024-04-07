@@ -15,11 +15,12 @@ const LoginPage = () => {
             const response = await axios.post("http://localhost:5000/login", { username: username,  password: password });
             const user_type = response.data.user_type;
             // Inside handleLogin function
-        if (user_type === 'user') {
+        if (user_type === 'admin') {
          // Set the username state
+         console.log("Entered the admin page");
         setUsername(username);
         // Navigate to user dashboard
-        navigate('/user', { state: { username } });
+        navigate('/admin', { state: { username } });
          }
              else if (user_type === 'user') {
                 // Pass username as state when navigating to UserDashboard
@@ -37,7 +38,7 @@ const LoginPage = () => {
             <form className="login-container" onSubmit={handleLogin}>
                 <input type="text" name="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
                 
-                <input type="password" autocomplete="current-password" name="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input type="password" autoComplete="current-password" name="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button type='submit'>Login</button>
             </form>
             <Link to="/forgot-password" className="forgot-password-link">Forgot Password?</Link>

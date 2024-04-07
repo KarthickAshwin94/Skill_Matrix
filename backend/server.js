@@ -30,9 +30,11 @@ app.post('/login', async (req, res) => {
     const result = await pool.query(`SELECT * FROM accounts WHERE username = $1;`, [username]);
     if (result.rowCount === 1) {
       const user = result.rows[0]; 
-      console.log("res",user)
+      console.log("response",user)
       const passwordMatch = await bcrypt.compare(password, user.password);
+      //console.log(passwordMatch);
        if (passwordMatch) {
+        console.log("Entered if statement in passwordMaytch")
         const tokenSecret = process.env.JWT_SECRET || 'default_secret_key';
 
         const token = jwt.sign({ username: user.username, user_type: user.user_type }, tokenSecret, { expiresIn: '1h' });
@@ -124,36 +126,45 @@ function validateToken(token) {
 }
 
 
+// Assuming you have already defined your express app instance and imported necessary modules
+
+
+// POST endpoint for resetting password
 app.post('/reset-password', async (req, res) => {
   const { email, token, newPassword } = req.body;
-
   try {
-console.log(token)
-    // Validate the token (optional step)
-      const isValidToken = validateToken(token);
+    // Validate the token (assuming validateToken is a synchronous function)
+   
+    const isValidToken = validateToken(token);
+    console.log(req.body);
+    console.log(isValidToken);
+    if (!isValidToken) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
 
-      if (!isValidToken) {
-        console.log("hello");
-          return res.status(400).json({ message: 'Invalid or expired token' });
-      }
+    // Find the user by email
+    const user = await User.findOne({ email });
 
-      // Find the user by email and update their password
-      const user = await user.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-      // Update the user's password
-      user.password = hashPassword(newPassword); // Assuming hashPassword function hashes the password
-      await user.save();
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // Assuming salt rounds as 10
 
-      // Respond with success message
-      res.status(200).json({ message: 'Password reset successfully' });
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    // Respond with success message
+    res.status(200).json({ message: 'Password reset successfully' });
   } catch (error) {
-      console.error('Error resetting password:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error('Error resetting password:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
 
 
 app.post(`/make-approver/:username`, async (req, res) => {
@@ -204,6 +215,9 @@ app.post('/add-skill', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
 
 const port = 5000;
 
