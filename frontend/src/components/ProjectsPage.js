@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Import Axios library
 import './ProjectsPage.css';
+import { Link, useLocation } from 'react-router-dom';
 
 const ProjectsPage = () => {
+
+
+  const location = useLocation();
+  const { username } = location.state || {}
   const [formData, setFormData] = useState({
     projectName: '',
     roleAssigned: '',
@@ -17,30 +23,49 @@ const ProjectsPage = () => {
 
   const handleFromDateChange = (e) => {
     const fromDate = e.target.value;
-    setFormData({ ...formData, fromDate });
+    setFormData(prevState => ({ ...prevState, fromDate }));
     calculateTotalDays(fromDate, formData.toDate);
   };
-
+  
   const handleToDateChange = (e) => {
     const toDate = e.target.value;
-    setFormData({ ...formData, toDate });
+    setFormData(prevState => ({ ...prevState, toDate }));
     calculateTotalDays(formData.fromDate, toDate);
   };
-
   const calculateTotalDays = (fromDate, toDate) => {
     if (fromDate && toDate) {
       const fromDateTime = new Date(fromDate).getTime();
       const toDateTime = new Date(toDate).getTime();
       const differenceInTime = toDateTime - fromDateTime;
       const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-      setFormData({ ...formData, totalDays: differenceInDays });
+      setFormData(prevState => ({ ...prevState, totalDays: differenceInDays }));
     }
   };
+  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+    try {
+     
+      const response = await axios.post('http://localhost:5000/add-project',  { username, ...formData });
+      if (response.status === 201) {
+        console.log('Project added successfully');
+        // Clear form fields after successful submission
+        setFormData({
+          projectName: '',
+          roleAssigned: '',
+          fromDate: '',
+          toDate: '',
+          totalDays: 0,
+        });
+      } else {
+        console.error('Failed to add project');
+        // Handle error appropriately
+      }
+    } catch (error) {
+      console.error('Error adding project:', error);
+      // Handle error appropriately
+    }
   };
 
   return (

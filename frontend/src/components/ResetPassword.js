@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './ResetPassword.css'
+import './ResetPassword.css';
 
 const ResetPasswordPage = ({ token }) => {
     const [email, setEmail] = useState('');
@@ -10,13 +10,15 @@ const ResetPasswordPage = ({ token }) => {
     const handleResetPassword = async (event) => {
         event.preventDefault();
         try {
-            console.log("Before calling the api");
             const response = await axios.post("http://localhost:5000/reset-password", { email, token, newPassword: password });
-            console.log("After calling the api");
             setMessage(response.data.message);
         } catch (error) {
-            setMessage('Failed to reset password. Please try again later.');
-            console.error('Password reset failed:', error);
+            if (error.response) {
+                setMessage(error.response.data.message);
+            } else {
+                setMessage('Failed to reset password. Please try again later.');
+                console.error('Password reset failed:', error);
+            }
         }
     };
 

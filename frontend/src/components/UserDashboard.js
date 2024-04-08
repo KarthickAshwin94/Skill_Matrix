@@ -1,35 +1,43 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 import './UserDashboard.css';
 import LogoutButton from './LogoutButton';
+import './LogoutButton.css';
 
 const UserDashboard = () => {
+  const location=useLocation();
+  const {username}= location.state||{};
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
+  const navigateToSkills = () => {
+    navigate("/user/skills",{ state: { username } });
+  };
 
-  const location = useLocation();
-  const { username } = location.state || {}
+  const navigateToCertifications = () => {
+    navigate("/user/certifications",{ state: { username } });
+  };
+
+  const navigateToProjects = () => {
+    navigate("/user/projects",{ state: { username } });
+  };
+
   return (
     <div className="user-dashboard">
       <h2>Welcome to Your Dashboard, {username}</h2>
       <div className="dashboard-links">
-        <Link to={{ pathname: "/user/skills", state: { username: username } }} className="dashboard-link">
-          <div className="dashboard-item">
-            <i className="fas fa-code"></i>
-            <span>Skills</span>
-          </div>
-        </Link>
-        <Link to="/user/certifications" className="dashboard-link">
-          <div className="dashboard-item">
-            <i className="fas fa-certificate"></i>
-            <span>Certifications</span>
-          </div>
-        </Link>
-        <Link to="/user/projects" className="dashboard-link">
-          <div className="dashboard-item">
-            <i className="fas fa-project-diagram"></i>
-            <span>Projects</span>
-          </div>
-        </Link>
+        <button className="dashboard-item" onClick={navigateToSkills}>
+          <i className="fas fa-code"></i>
+          <span>Skills</span>
+        </button>
+        <button className="dashboard-item" onClick={navigateToCertifications}>
+          <i className="fas fa-certificate"></i>
+          <span>Certifications</span>
+        </button>
+        <button className="dashboard-item" onClick={navigateToProjects}>
+          <i className="fas fa-project-diagram"></i>
+          <span>Projects</span>
+        </button>
       </div>
       <LogoutButton />
     </div>
@@ -37,17 +45,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-

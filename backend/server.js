@@ -24,8 +24,9 @@ app.use(bodyParser.json());// used for parsing incoming request in JSON format
 
 // Endpoint for user login
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-   console.log(username, password);
+  console.log(req.body);
+  const { username, password,is_approver } = req.body;
+  console.log(req.body);
   try {
     const result = await pool.query(`SELECT * FROM accounts WHERE username = $1;`, [username]);
     if (result.rowCount === 1) {
@@ -118,20 +119,32 @@ app.post('/createUser', async (req, res) => {
 });
 
 
+
+
 function validateToken(token) {
-  // Example: Check if the token is not expired
-  const tokenExpirationDate = (token);
-  const currentDate = new Date();
-  return tokenExpirationDate > currentDate;
+  try {
+    // Parse the token to extract its payload
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check if the token is not expired
+    const tokenExpirationDate = new Date(decoded.exp * 1000); // Convert expiration time to milliseconds
+    const currentDate = new Date();
+    return tokenExpirationDate > currentDate;
+  } catch (error) {
+    // Token verification failed, token is invalid
+    console.error('Error verifying token:', error);
+    return false;
+  }
 }
+
 
 
 // Assuming you have already defined your express app instance and imported necessary modules
 
-
 // POST endpoint for resetting password
 app.post('/reset-password', async (req, res) => {
   const { email, token, newPassword } = req.body;
+
   try {
     // Validate the token (assuming validateToken is a synchronous function)
    
@@ -167,6 +180,8 @@ app.post('/reset-password', async (req, res) => {
 
 
 
+
+//----------------------------------------------------------
 app.post(`/make-approver/:username`, async (req, res) => {
   const { username } = req.params;
 
@@ -189,26 +204,23 @@ app.post(`/make-approver/:username`, async (req, res) => {
 app.post('/add-skill', async (req, res) => {
   try {
     console.log(req.body)
-    const { technologyName, proficiency, project, isApproved } = req.body;
-    const username = 'arjun'
 
+    const { technologyName, proficiency, project, isApproved,username } = req.body;
+    
     // Check if any required field is missing
-
-
+    
     if (!username && !technologyName && !proficiency && !isApproved) {
-      console.log("in this")
       return res.status(400).json({ message: 'All fields are required' });
     }
-    else
-    {
+    
           // Insert skill data into the skills table
     const query = `
-    INSERT INTO skills (username, technology, proficiency, projects_worked, is_approved)
-    VALUES ($1, $2, $3, $4, $5)`;
+    INSERT INTO skills (username, technology, proficiency, projects_worked,is_approved)
+    VALUES ($1, $2, $3, $4,$5)`;
   await pool.query(query, [username, technologyName, proficiency, project, isApproved]);
 
   res.status(201).json({ message: 'Skill added successfully' });
-    }
+    
 
   } catch (error) {
     console.error('Error adding skill:', error);
@@ -217,10 +229,67 @@ app.post('/add-skill', async (req, res) => {
 });
 
 
+// Use body-parser middleware to parse request bodies
+app.use(bodyParser.json());
+
+// POST endpoint for adding a new certification
+app.post('/add-certification', async (req, res) => {
+  try {
+    
+    const { username, courseName, institutionName, fromDate, toDate, score, isApproved } = req.body;
+    // Check if any required field is missing
+    console.log(req.body);
+    if (!username || !courseName || !institutionName || !fromDate || !toDate || !score) {
+      
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+   
+    // Insert certification data into the certifications table
+    const query = `
+      INSERT INTO certifications (username, course_name, institution_name, from_date, to_date, score, is_approved)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
+    await pool.query(query, [username, courseName, institutionName, fromDate, toDate, score, isApproved]);
+
+    res.status(201).json({ message: 'Certification added successfully' });
+  } catch (error) {
+    console.error('Error adding certification:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
-const port = 5000;
 
+
+// Define the route for adding a new project
+app.post('/add-project', async (req, res) => {
+  try {
+   
+    const { projectName, roleAssigned, fromDate, toDate, totalDays, username } = req.body;
+    // Check if any required field is missing
+    if (!username || !projectName || !roleAssigned || !fromDate || !toDate || !totalDays) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Insert project data into the projects table
+    const query = `
+      INSERT INTO projects (username, project_name, role_assigned, from_date, to_date, total_days, is_approved)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
+    await pool.query(query, [username, projectName, roleAssigned, fromDate, toDate, totalDays, false]);
+
+    res.status(201).json({ message: 'Project added successfully' });
+  } catch (error) {
+    console.error('Error adding project:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Attach the router to the '/api' endpoint
+app.use('/api', router);
+
+
+const port=5000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

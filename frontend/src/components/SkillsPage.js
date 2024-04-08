@@ -1,46 +1,49 @@
-  import React, { useState } from 'react';
-  import axios from 'axios';
-  import './SkillsPage.css';
 
-  const SkillsPage = ({ username }) => {
-    const [formData, setFormData] = useState({
-      technologyName: '',
-      proficiency: 5,
-      project: '',
-      isApproved: false,
-    });
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData({ ...formData, [name]: value });
-    };
-  
+import React, { useState } from 'react';
+import axios from 'axios';
+import './SkillsPage.css';
+import { Link, useLocation } from 'react-router-dom';
+const SkillsPage = () => {
+  const location = useLocation();
+  const { username } = location.state || {}
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        // Send skill data to backend API including the username
-        
-        await axios.post('http://localhost:5000/add-skill', { ...formData, username: username });
-        console.log('Skill added successfully');
-        setFormData({
-          technologyName: '',
-          proficiency: 5,
-          project: '',
-          isApproved: false,
-        });
-      } catch (error) {
-        console.error('Error adding skill:', error);
-        alert('Failed to add skill. Please try again.');
-      }
-    };
+  const [formData, setFormData] = useState({
+    technologyName: '',
+    proficiency: 5,
+    project: '',
+    isApproved: false,
+  });
 
-    return (
-      <div className='login-container'>
-        <h2>Add New Skill</h2>
-        <form onSubmit={handleSubmit}>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Send skill data to backend API including the username
+      await axios.post('http://localhost:5000/add-skill', { ...formData, username: username });
+      console.log('Skill added successfully');
+      setFormData({
+        technologyName: '',
+        proficiency: 5,
+        project: '',
+        isApproved: false,
+      });
+    } catch (error) {
+      console.error('Error adding skill:', error);
+      alert('Failed to add skill. Please try again.');
+    }
+  };
+
+  return (
+    <div className='login-container'>
+      <h2>Add New Skill</h2>
+      <form onSubmit={handleSubmit}>
         <div>
-            <label htmlFor="technologyName">Technologies:</label>
+          <label htmlFor="technologyName">Technologies:</label>
+          <label htmlFor="technologyName">Technologies:</label>
             <select
               id="technologyName"
               name="technologyName"
@@ -58,7 +61,6 @@
           </div>
           <div>
             <label htmlFor="proficiency">Proficiency:</label>
-            {/* Slider for proficiency */}
             <input
               type="range"
               id="proficiency"
@@ -68,7 +70,6 @@
               value={formData.proficiency}
               onChange={handleChange}
             />
-            {/* Display current proficiency value */}
             <span>{formData.proficiency}</span>
           </div>
           <div>
@@ -96,21 +97,15 @@
                 setFormData({ ...formData, isApproved: e.target.checked })
               }
             />
-          </div>
 
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-    );
-  };
-  
-  export default SkillsPage;
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+};
 
-
-
-
-
-
+export default SkillsPage;
 
 
 

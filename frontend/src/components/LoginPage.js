@@ -5,7 +5,6 @@ import './LoginPage.css';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
-
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
@@ -14,30 +13,31 @@ const LoginPage = () => {
         try {
             const response = await axios.post("http://localhost:5000/login", { username: username,  password: password });
             const user_type = response.data.user_type;
-            // Inside handleLogin function
-        if (user_type === 'admin') {
-         // Set the username state
-         console.log("Entered the admin page");
-        setUsername(username);
-        // Navigate to user dashboard
-        navigate('/admin', { state: { username } });
-         }
-             else if (user_type === 'user') {
-                // Pass username as state when navigating to UserDashboard
-                navigate('/user', { state: { username: username } });
+            const is_approver=response.data.is_approver;
+            console.log(response);
+            console.log(user_type);
+            console.log(is_approver);
+         
+            if (user_type === 'admin') {
+                setUsername(username); // Set the username state
+                navigate('/admin', { state: { username } });
+            } else if((user_type === 'user')&&(is_approver==false))  {
+                navigate('/user', { state: { username } }); // Pass username as state when navigating to UserDashboard
+            }
+            else if((user_type=='user')&&(is_approver==true))
+            {
+                navigate('/submissions', { state: { username } });   
             }
         } catch (error) {
             console.error('Login failed:', error.response.data.message);
         }
     };
-    
-    
+
     return (
         <>
             <h2>Login</h2>
             <form className="login-container" onSubmit={handleLogin}>
                 <input type="text" name="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                
                 <input type="password" autoComplete="current-password" name="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button type='submit'>Login</button>
             </form>
