@@ -12,7 +12,7 @@ import CertificationsPage from './components/CertificationsPage';
 import ProjectsPage from './components/ProjectsPage';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ResetPasswordPage from './components/ResetPassword';
-import ApproverPage from './components/ApproverPage';
+
 
 function App() {
   const [username, setUsername] = useState('');
@@ -45,12 +45,8 @@ function App() {
         element={<ForgotPasswordPage />}
       />
       <Route
-        path="/resetpassword/:token"
+        path="/reset-password"
         element={<ResetPasswordPage />}
-      />
-      <Route
-        path="/submissions"
-        element={< ApproverPage/>}
       />
     </Routes>
   );

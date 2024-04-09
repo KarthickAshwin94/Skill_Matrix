@@ -21,12 +21,8 @@ const LoginPage = () => {
             if (user_type === 'admin') {
                 setUsername(username); // Set the username state
                 navigate('/admin', { state: { username } });
-            } else if((user_type === 'user')&&(is_approver==false))  {
+            } else if(user_type === 'user')  {
                 navigate('/user', { state: { username } }); // Pass username as state when navigating to UserDashboard
-            }
-            else if((user_type=='user')&&(is_approver==true))
-            {
-                navigate('/submissions', { state: { username } });   
             }
         } catch (error) {
             console.error('Login failed:', error.response.data.message);
@@ -42,6 +38,7 @@ const LoginPage = () => {
                 <button type='submit'>Login</button>
             </form>
             <Link to="/forgot-password" className="forgot-password-link">Forgot Password?</Link>
+            
         </>
     );
 };

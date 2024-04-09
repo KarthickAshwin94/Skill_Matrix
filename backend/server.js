@@ -54,7 +54,7 @@ app.post('/login', async (req, res) => {
   
 });
 
-
+/*
 //forgot password page which is the page where the user enters his email id and gets the reset link for password
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
@@ -78,6 +78,7 @@ app.post('/forgot-password', async (req, res) => {
       res.status(500).json({ message: 'Failed to send reset password email. Please try again later.' });
   }
 });
+*/
 
 // Define your email configuration
 const transporter = nodemailer.createTransport({
@@ -88,17 +89,69 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Define the route to handle forgot password requests 
-// This is the link which the user receives when the user opted for forgot password
+// server.js or app.js
 
-
-// Helper function to generate random token (example)
-function generateRandomToken() {
-    return Math.random().toString(36).substr(2, 10);
+app.use(bodyParser.json());
+// Function to generate random OTP
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000);
 }
 
-// Export the router
-module.exports = router;
+// Function to store OTP in the database with expiration timestamp
+async function storeOTP(email) {
+  try {
+    // Generate OTP
+    const otp = generateOTP();
+    console.log(otp);
+
+    // Calculate expiration time (e.g., 10 minutes from now)
+    const expirationTime = new Date();
+    expirationTime.setMinutes(expirationTime.getMinutes() + 10); // Set expiration time to 10 minutes from now
+
+    const query = 'INSERT INTO otps (email, otp_code, expires_at) VALUES ($1, $2, $3)';
+    await pool.query(query, [email, otp, expirationTime]);
+    console.log('OTP stored successfully in the database');
+
+    return otp; // Return the generated OTP
+  } catch (error) {
+    console.error('Error storing OTP:', error);
+    throw error; // Throw error for handling at higher levels
+  }
+}
+
+
+// Endpoint for sending OTP
+app.post('/send-otp', async (req, res) => {
+  const { email } = req.body;
+  const otp = await storeOTP(email);
+  const resetPasswordLink = `http://localhost:3000/reset-password`; // Change the URL as needed
+
+  // Store the OTP in the database or memory for verification later
+
+  // Send OTP and reset password link to the user's email
+  const mailOptions = {
+    from: 'karthickashwin423@gmail.com',
+    to: email,
+    subject: 'Password Reset OTP',
+    html: `
+      <p>Your OTP for password reset is: ${otp}.</p>
+      <p>Click the following link to reset your password:</p>
+      <a href="${resetPasswordLink}">Reset Password</a>
+    `
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending OTP:', error);
+      res.status(500).json({ message: 'Failed to send OTP' });
+    } else {
+      console.log('OTP sent:', info.response);
+      res.status(200).json({ message: 'OTP sent successfully' });
+    }
+  });
+});
+
+
 
 
 app.post('/createUser', async (req, res) => {
@@ -117,69 +170,7 @@ app.post('/createUser', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
-
-
-
-
-function validateToken(token) {
-  try {
-    // Parse the token to extract its payload
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Check if the token is not expired
-    const tokenExpirationDate = new Date(decoded.exp * 1000); // Convert expiration time to milliseconds
-    const currentDate = new Date();
-    return tokenExpirationDate > currentDate;
-  } catch (error) {
-    // Token verification failed, token is invalid
-    console.error('Error verifying token:', error);
-    return false;
-  }
-}
-
-
-
-// Assuming you have already defined your express app instance and imported necessary modules
-
-// POST endpoint for resetting password
-app.post('/reset-password', async (req, res) => {
-  const { email, token, newPassword } = req.body;
-
-  try {
-    // Validate the token (assuming validateToken is a synchronous function)
-   
-    const isValidToken = validateToken(token);
-    console.log(req.body);
-    console.log(isValidToken);
-    if (!isValidToken) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
-    }
-
-    // Find the user by email
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10); // Assuming salt rounds as 10
-
-    // Update the user's password
-    user.password = hashedPassword;
-    await user.save();
-
-    // Respond with success message
-    res.status(200).json({ message: 'Password reset successfully' });
-  } catch (error) {
-    console.error('Error resetting password:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-
-
+//-------------------------------------------------------
 
 //----------------------------------------------------------
 app.post(`/make-approver/:username`, async (req, res) => {
@@ -285,8 +276,107 @@ app.post('/add-project', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// POST endpoint for resetting password
+app.post('/reset-password', async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+console.log(email,otp,newPassword);
+  try {
+    // Validate the OTP
+    const isValidOTP = await validateOTP(email, otp); // Function to validate OTP
+    if (!isValidOTP) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Update the user's password
+    await updateUserPasswordInDatabase(email, newPassword);
+
+    // Respond with success message
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 // Attach the router to the '/api' endpoint
 app.use('/api', router);
+
+
+
+
+// Function to update user's password in the database
+
+// Function to update user's password in the database
+async function updateUserPasswordInDatabase(email, newPassword) {
+  try {
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const query = 'UPDATE accounts SET password = $1 WHERE email = $2';
+    await pool.query(query, [hashedPassword, email]);
+    console.log('User password updated successfully');
+  } catch (error) {
+    console.error('Error updating user password:', error);
+    throw error; // Throw error for handling at higher levels
+  }
+}
+
+
+// Function to validate OTP
+async function validateOTP(email, otp) {
+  try {
+    // Retrieve the stored OTP for the given email from the database
+    const query = 'SELECT * FROM otps WHERE email = $1 AND otp_code = $2 AND expires_at > NOW()';
+    const result = await pool.query(query, [email, otp]);
+
+    // If a matching OTP record is found and it's not expired
+    if (result.rows.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error validating OTP:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const port=5000;
