@@ -194,6 +194,7 @@ app.post(`/make-approver/:username`, async (req, res) => {
 //api to insert skills for each user in skills table
 app.post('/add-skill', async (req, res) => {
   try {
+    console.log("Hello There !");
     console.log(req.body)
 
     const { technologyName, proficiency, project, isApproved,username } = req.body;
@@ -222,25 +223,29 @@ app.post('/add-skill', async (req, res) => {
 
 // Use body-parser middleware to parse request bodies
 app.use(bodyParser.json());
-
 // POST endpoint for adding a new certification
 app.post('/add-certification', async (req, res) => {
   try {
-    
     const { username, courseName, institutionName, fromDate, toDate, score, isApproved } = req.body;
+
     // Check if any required field is missing
-    console.log(req.body);
     if (!username || !courseName || !institutionName || !fromDate || !toDate || !score) {
-      
       return res.status(400).json({ message: 'All fields are required' });
     }
-   
+
+    // Parse date strings into Date objects
+    const fromDateObj = new Date(fromDate);
+    const toDateObj = new Date(toDate);
+
+    // Handle checkbox value for isApproved
+    const isApprovedValue = isApproved === 'true'; // Convert string to boolean
+
     // Insert certification data into the certifications table
     const query = `
       INSERT INTO certifications (username, course_name, institution_name, from_date, to_date, score, is_approved)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
     `;
-    await pool.query(query, [username, courseName, institutionName, fromDate, toDate, score, isApproved]);
+    await pool.query(query, [username, courseName, institutionName, fromDateObj, toDateObj, score, isApprovedValue]);
 
     res.status(201).json({ message: 'Certification added successfully' });
   } catch (error) {
@@ -251,7 +256,7 @@ app.post('/add-certification', async (req, res) => {
 
 
 
-
+/*
 // Define the route for adding a new project
 app.post('/add-project', async (req, res) => {
   try {
@@ -275,7 +280,30 @@ app.post('/add-project', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+*/
 
+// Define the route for adding a new project
+app.post('/add-project', async (req, res) => {
+  try {
+    const { username, projectName, roleAssigned, fromDate, toDate, totalDays } = req.body;
+    // Check if any required field is missing
+    if (!username || !projectName || !roleAssigned || !fromDate || !toDate || !totalDays) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Insert project data into the projects table
+    const query = `
+      INSERT INTO projects (username, project_name, role_assigned, from_date, to_date, total_days, is_approved)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
+    await pool.query(query, [username, projectName, roleAssigned, fromDate, toDate, totalDays, false]);
+
+    res.status(201).json({ message: 'Project added successfully' });
+  } catch (error) {
+    console.error('Error adding project:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 

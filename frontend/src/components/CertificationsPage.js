@@ -1,21 +1,19 @@
-
-
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios'; // Import Axios library
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import './CertificationsPage.css';
 import { useNavigate } from 'react-router-dom';
 
 export default function CertificationsPage() {
   const location = useLocation();
   const { username } = location.state || {}
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     courseName: '',
     institutionName: '',
-    fromDate: null,
-    toDate: null,
+    fromDate: '',
+    toDate: '',
     score: '',
     isApproved: false,
   });
@@ -28,18 +26,16 @@ export default function CertificationsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(username);
+      console.log()
       const response = await axios.post('http://localhost:5000/add-certification', { username, ...formData });
       if (response.status === 201) {
         console.log('Certification added successfully');
-        navigate('/user'); // Redirect to dashboard after successful submission
+        navigate('/user');
       } else {
         console.error('Failed to add certification');
-        // Handle error appropriately
       }
     } catch (error) {
       console.error('Error adding certification:', error);
-      // Handle error appropriately
     }
   };
 
@@ -48,49 +44,65 @@ export default function CertificationsPage() {
       <h2>Add New Certification</h2>
       <form onSubmit={handleSubmit}>
 
-      <div>
+        <div className="form-group">
           <label htmlFor="courseName">Course Name:</label>
-          <input
-            type="text"
+          <select
             id="courseName"
             name="courseName"
             value={formData.courseName}
             onChange={handleChange}
-          />
+            className="form-control"
+          >
+            <option value="">Select Course</option>
+            <option value="Programming in Java">Programming in Java</option>
+            <option value="Data Analytics using Python">Data Analytics using Python</option>
+            <option value="C#">C#</option>
+            <option value="Web Development">Web Development</option>
+          </select>
         </div>
-        
-        <div>
+
+        <div className="form-group">
           <label htmlFor="institutionName">Institution Name:</label>
-          <input
-            type="text"
+          <select
             id="institutionName"
             name="institutionName"
             value={formData.institutionName}
             onChange={handleChange}
+            className="form-control"
+          >
+            <option value="">Select Institution</option>
+            <option value="NPTEL">NPTEL</option>
+            <option value="Coursera">Coursera</option>
+            <option value="Google">Google</option>
+            <option value="Prepinsta">Prepinsta</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="fromDate">From Date:</label>
+          <input
+            type="date"
+            id="fromDate"
+            name="fromDate"
+            value={formData.fromDate}
+            onChange={handleChange}
+            className="form-control"
           />
         </div>
-        <div>
-  <label htmlFor="fromDate">From Date:</label>
-  <input
-    type="date"
-    id="fromDate"
-    name="fromDate"
-    value={formData.fromDate || ''}
-    onChange={handleChange}
-  />
-</div>
-<div>
-  <label htmlFor="toDate">To Date:</label>
-  <input
-    type="date"
-    id="toDate"
-    name="toDate"
-    value={formData.toDate || ''}
-    onChange={handleChange}
-  />
-</div>
 
-        <div>
+        <div className="form-group">
+          <label htmlFor="toDate">To Date:</label>
+          <input
+            type="date"
+            id="toDate"
+            name="toDate"
+            value={formData.toDate}
+            onChange={handleChange}
+            className="form-control"
+          />
+        </div>
+
+        <div className="form-group">
           <label htmlFor="score">Score:</label>
           <input
             type="text"
@@ -98,19 +110,12 @@ export default function CertificationsPage() {
             name="score"
             value={formData.score}
             onChange={handleChange}
+            className="form-control"
           />
         </div>
-        <div>
-          <label htmlFor="isApproved">Is Approved:</label>
-          <input
-            type="checkbox"
-            id="isApproved"
-            name="isApproved"
-            checked={formData.isApproved}
-            onChange={(e) => setFormData({ ...formData, isApproved: e.target.checked })}
-          />
-        </div>
-        <button type="submit">Submit</button>
+
+  
+        <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     </div>
   );

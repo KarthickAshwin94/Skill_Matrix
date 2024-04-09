@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
 import LogoutButton from './LogoutButton';
+import './CertificationsPage.css';
 
 const AdminDashboard = () => {
   const [newUsername, setNewUsername] = useState('');
