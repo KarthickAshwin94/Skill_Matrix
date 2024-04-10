@@ -14,16 +14,32 @@ const LoginPage = () => {
             const response = await axios.post("http://localhost:5000/login", { username: username,  password: password });
             const user_type = response.data.user_type;
             const is_approver=response.data.is_approver;
-            console.log(response);
-            console.log(user_type);
-            console.log(is_approver);
-         
+            setUsername(username); // Set the username state
+          
             if (user_type === 'admin') {
-                setUsername(username); // Set the username state
+                
                 navigate('/admin', { state: { username } });
-            } else if(user_type === 'user')  {
+            } else if((user_type === 'user')&&(is_approver===false))  {
+            
                 navigate('/user', { state: { username } }); // Pass username as state when navigating to UserDashboard
             }
+            else if((user_type==='user')&&(is_approver===true))
+            {
+                if(username==='Christopher')
+                {
+                    navigate('/skill-approval',{ state: { username } });
+                }
+                else if(username==='Arun')
+                {
+                    navigate('/certification-approval',{state:{username}});
+                }
+                else if(username==='Ganesh')
+                {
+                    navigate('/project-approval',{state:{username}})
+                }
+            }
+            
+            
         } catch (error) {
             console.error('Login failed:', error.response.data.message);
         }

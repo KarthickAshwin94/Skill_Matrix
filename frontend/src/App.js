@@ -1,9 +1,6 @@
-
-
-
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import axios from 'axios'; // Import axios for making HTTP requests
 import LoginPage from './components/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
 import UserDashboard from './components/UserDashboard';
@@ -12,10 +9,14 @@ import CertificationsPage from './components/CertificationsPage';
 import ProjectsPage from './components/ProjectsPage';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ResetPasswordPage from './components/ResetPassword';
-
-
+import SkillApproval from './components/SkillApproval';
+import CertificationApproval from './components/CertificationApproval';
+import ProjectsApproval from './components/ProjectApproval';
 function App() {
   const [username, setUsername] = useState('');
+  const [usernames, setUsernames] = useState([]);
+
+
 
   return (
     <Routes>
@@ -48,8 +49,21 @@ function App() {
         path="/reset-password"
         element={<ResetPasswordPage />}
       />
+      <Route
+        path="/skill-approval"
+        element={<SkillApproval />}
+      />
+      <Route
+        path="/certification-approval"
+        element={< CertificationApproval/>}
+      />
+      <Route
+        path="/project-approval"
+        element={<ProjectsApproval/>}
+      />
     </Routes>
   );
 }
 
 export default App;
+

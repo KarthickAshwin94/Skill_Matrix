@@ -26,7 +26,7 @@ export default function CertificationsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log()
+   
       const response = await axios.post('http://localhost:5000/add-certification', { username, ...formData });
       if (response.status === 201) {
         console.log('Certification added successfully');

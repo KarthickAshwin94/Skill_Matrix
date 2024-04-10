@@ -81,7 +81,7 @@ const SkillsPage = () => {
               <option value="">Select Project</option>
               <option value="Facebook">Facebook</option>
               <option value="Churn Rate Prediction">Churn Rate Prediction</option>
-              <option value="Products Sales Report">Products Sales Report</option>
+              <option value="Products Sales Report">UPI</option>
               <option value="Customer Retention Rate">Customer Retention Rate</option>
             </select>
           </div>
@@ -89,7 +89,7 @@ const SkillsPage = () => {
       </form>
     </div>
   );
-};
+};  
 
 export default SkillsPage;
 

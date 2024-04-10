@@ -23,27 +23,35 @@ app.use(bodyParser.json());// used for parsing incoming request in JSON format
 
 
 // Endpoint for user login
+// Endpoint for user login
 app.post('/login', async (req, res) => {
-  console.log(req.body);
-  const { username, password,is_approver } = req.body;
-  console.log(req.body);
+  const { username, password } = req.body;
+
   try {
     const result = await pool.query(`SELECT * FROM accounts WHERE username = $1;`, [username]);
     if (result.rowCount === 1) {
       const user = result.rows[0]; 
-      console.log("response",user)
+      console.log("response", user);
       const passwordMatch = await bcrypt.compare(password, user.password);
-      //console.log(passwordMatch);
-       if (passwordMatch) {
-        console.log("Entered if statement in passwordMaytch")
+      console.log(passwordMatch);
+      if (passwordMatch) {
         const tokenSecret = process.env.JWT_SECRET || 'default_secret_key';
 
-        const token = jwt.sign({ username: user.username, user_type: user.user_type }, tokenSecret, { expiresIn: '1h' });
-        res.status(200).json({ message: 'Login Successful', token , user_type: user.user_type});
-        
-       } else {
+        const token = jwt.sign({ 
+          username: user.username, 
+          user_type: user.user_type,
+          is_approver: user.is_approver // Include is_approver in the token payload
+        }, tokenSecret, { expiresIn: '1h' });
+
+        res.status(200).json({ 
+          message: 'Login Successful', 
+          token, 
+          user_type: user.user_type,
+          is_approver: user.is_approver // Include is_approver in the response
+        });
+      } else {
         res.status(401).json({ message: 'Invalid username or password' });
-       }
+      }
     } else {
       res.status(401).json({ message: 'Invalid username or password' });
     }
@@ -51,34 +59,7 @@ app.post('/login', async (req, res) => {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-  
 });
-
-/*
-//forgot password page which is the page where the user enters his email id and gets the reset link for password
-app.post('/forgot-password', async (req, res) => {
-  const { email } = req.body;
-
-  try {
-      // Generate a random token (you can use crypto or any library for this)
-      const token = generateRandomToken();
-
-      // Send the reset password email with the token included in the URL
-      await transporter.sendMail({
-          from: 'karthickashwin423@gmail.com',
-          to: email,
-          subject: 'Reset Your Password',
-          html: `<p>To reset your password, click on the following link:</p><p><a href="http://localhost:3000/resetpassword/${token}">Reset Password</a></p>`
-      });
-
-      // Respond with success message
-      res.status(200).json({ message: 'Reset password email sent. Please check your email.' });
-  } catch (error) {
-      console.error('Failed to send reset password email:', error);
-      res.status(500).json({ message: 'Failed to send reset password email. Please try again later.' });
-  }
-});
-*/
 
 // Define your email configuration
 const transporter = nodemailer.createTransport({
@@ -219,6 +200,80 @@ app.post('/add-skill', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+// Import necessary modules
+
+// Route to fetch user and course information based on skillId
+// Import necessary modules
+
+// Route to fetch all usernames
+app.get('/get-pending-users', async (req, res) => {
+  try {
+    console.log("Hello there");
+    // Query to fetch usernames and technologies for users with is_approved as false
+    const query = `
+      SELECT username, technology
+      FROM skills
+      WHERE is_approved = false
+    `;
+    const { rows } = await pool.query(query);
+   console.log(rows);
+    // Send the data as response
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching pending users:', error);
+    // Send error response
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// For approving a skill
+app.put('/approve-skill', async (req, res) => {
+  try {
+    console.log("Hello there!!!!! ");
+    const { username, feedback, technology } = req.body;
+
+    // Update the skills table to set is_approved to true
+    // Example query assuming you're using SQL
+    const query = `
+      UPDATE skills
+      SET is_approved = $1,
+          feedback = $2,
+          technology = $3
+      WHERE username = $4
+    `;
+    await pool.query(query, [true, feedback, technology, username]);
+
+    res.status(200).json({ message: 'Skill approved successfully' });
+  } catch (error) {
+    console.error('Error approving skill:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// For denying a skill
+app.put('/deny-skill', async (req, res) => {
+  try {
+    const { username, feedback, technology } = req.body;
+
+    // Update the skills table to set is_approved to false
+    // Example query assuming you're using SQL
+    const query = `
+      UPDATE skills
+      SET is_approved = $1,
+          feedback = $2,
+          technology = $3
+      WHERE username = $4
+    `;
+    await pool.query(query, [false,feedback, technology, username]);
+
+    res.status(200).json({ message: 'Skill denied successfully' });
+  } catch (error) {
+    console.error('Error denying skill:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 // Use body-parser middleware to parse request bodies
@@ -256,37 +311,85 @@ app.post('/add-certification', async (req, res) => {
 
 
 
-/*
-// Define the route for adding a new project
-app.post('/add-project', async (req, res) => {
+//--------------------------------------------------------------------------------------------
+
+
+app.get('/get-pending-users-certification', async (req, res) => {
   try {
-   
-    const { projectName, roleAssigned, fromDate, toDate, totalDays, username } = req.body;
-    // Check if any required field is missing
-    if (!username || !projectName || !roleAssigned || !fromDate || !toDate || !totalDays) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    // Insert project data into the projects table
+    // Query to fetch usernames and technologies for users with is_approved as false
     const query = `
-      INSERT INTO projects (username, project_name, role_assigned, from_date, to_date, total_days, is_approved)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      SELECT username, course_name
+      FROM certifications
+      WHERE is_approved = false
     `;
-    await pool.query(query, [username, projectName, roleAssigned, fromDate, toDate, totalDays, false]);
-
-    res.status(201).json({ message: 'Project added successfully' });
+    const { rows } = await pool.query(query);
+   console.log(rows);
+    // Send the data as response
+    res.status(200).json(rows);
   } catch (error) {
-    console.error('Error adding project:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error fetching pending users:', error);
+    // Send error response
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
-*/
 
+
+
+// For approving a skill
+app.put('/approve-certification', async (req, res) => {
+  try {
+    const { username, feedback, certification } = req.body;
+
+    // Update the skills table to set is_approved to true
+    // Example query assuming you're using SQL
+    const query = `
+      UPDATE certifications
+      SET is_approved = $1,
+          feedback = $2,
+          course_name = $3
+      WHERE username = $4
+    `;
+    await pool.query(query, [true, feedback, certification, username]);
+
+    res.status(200).json({ message: 'Certification approved successfully' });
+  } catch (error) {
+    console.error('Error approving certification:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// For denying a skill
+// For denying a skill
+app.put('/deny-certification', async (req, res) => {
+  try {
+    const { username, feedback, certification } = req.body;
+
+    // Update the certifications table to set is_approved to false
+    const query = `
+      UPDATE certifications
+      SET is_approved = false,
+          feedback = $1,
+          course_name = $2
+      WHERE username = $3
+    `;
+    await pool.query(query, [feedback, certification, username]);
+
+    res.status(200).json({ message: 'Certification denied successfully' });
+  } catch (error) {
+    console.error('Error denying certification:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+//---------------------------------------------------------------------------------------------
 // Define the route for adding a new project
 app.post('/add-project', async (req, res) => {
   try {
     const { username, projectName, roleAssigned, fromDate, toDate, totalDays } = req.body;
     // Check if any required field is missing
+    console.log(req.body);
     if (!username || !projectName || !roleAssigned || !fromDate || !toDate || !totalDays) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -305,7 +408,74 @@ app.post('/add-project', async (req, res) => {
   }
 });
 
+//----------------------------------------------------------------------------------
 
+// Route to fetch all usernames and associated project details
+app.get('/get-pending-projects', async (req, res) => {
+  try {
+    // Query to fetch usernames, project names, and technologies for projects with is_approved as false
+    const query = `
+      SELECT username, project_name
+      FROM projects
+      WHERE is_approved = false
+    `;
+    const { rows } = await pool.query(query);
+    // Send the data as response
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching pending projects:', error);
+    // Send error response
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// For approving a project
+app.put('/approve-project', async (req, res) => {
+  try {
+    console.log("Hello there!");
+    const { username, feedback, project, technology } = req.body;
+
+    // Update the projects table to set is_approved to true
+    const query = `
+      UPDATE projects
+      SET is_approved = $1,
+          feedback = $2,
+          project_name = $3
+      WHERE username = $4
+    `;
+    await pool.query(query, [true, feedback, project, username]);
+
+    res.status(200).json({ message: 'Project approved successfully' });
+  } catch (error) {
+    console.error('Error approving project:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// For denying a project
+app.put('/deny-project', async (req, res) => {
+  try {
+    const { username, feedback, project, technology } = req.body;
+
+    // Update the projects table to set is_approved to false
+    const query = `
+      UPDATE projects
+      SET is_approved = $1,
+          feedback = $2,
+          project_name = $3
+      WHERE username = $4
+    `;
+    await pool.query(query, [false, feedback, project,  username]);
+
+    res.status(200).json({ message: 'Project denied successfully' });
+  } catch (error) {
+    console.error('Error denying project:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+//------------------------------------------------------------------------------------
 
 
 
