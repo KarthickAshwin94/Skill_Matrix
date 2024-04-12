@@ -1,5 +1,3 @@
-/* AdminDashboard.css */
-
 .admin-dashboard-container {
     width: 300px;
     margin: 100px auto;
@@ -7,7 +5,7 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    background-color: #f9f9f9; /* Updated background color */
 }
 
 .admin-dashboard-container h2 {
@@ -41,6 +39,4 @@
 
 .admin-dashboard-container button:hover {
     background-color: #0056b3;
-    
 }
-

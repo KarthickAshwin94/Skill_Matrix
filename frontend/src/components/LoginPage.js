@@ -46,7 +46,7 @@ const LoginPage = () => {
     };
 
     return (
-        <>
+        <div className="login-page"> 
             <h2>Login</h2>
             <form className="login-container" onSubmit={handleLogin}>
                 <input type="text" name="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -55,7 +55,7 @@ const LoginPage = () => {
             </form>
             <Link to="/forgot-password" className="forgot-password-link">Forgot Password?</Link>
             
-        </>
+            </div> 
     );
 };
 
