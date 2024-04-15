@@ -188,9 +188,9 @@ app.post('/add-skill', async (req, res) => {
     
           // Insert skill data into the skills table
     const query = `
-    INSERT INTO skills (username, technology, proficiency, projects_worked,is_approved)
-    VALUES ($1, $2, $3, $4,$5)`;
-  await pool.query(query, [username, technologyName, proficiency, project, isApproved]);
+    INSERT INTO skills (username, technology, proficiency, projects_worked,is_approved,approver)
+    VALUES ($1, $2, $3, $4,$5,$6)`;
+  await pool.query(query, [username, technologyName, proficiency, project, isApproved,"Christopher"]);
 
   res.status(201).json({ message: 'Skill added successfully' });
     
@@ -297,10 +297,10 @@ app.post('/add-certification', async (req, res) => {
 
     // Insert certification data into the certifications table
     const query = `
-      INSERT INTO certifications (username, course_name, institution_name, from_date, to_date, score, is_approved)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO certifications (username, course_name, institution_name, from_date, to_date, score, is_approved,approver)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `;
-    await pool.query(query, [username, courseName, institutionName, fromDateObj, toDateObj, score, isApprovedValue]);
+    await pool.query(query, [username, courseName, institutionName, fromDateObj, toDateObj, score, isApprovedValue,'Arun']);
 
     res.status(201).json({ message: 'Certification added successfully' });
   } catch (error) {
@@ -389,17 +389,18 @@ app.post('/add-project', async (req, res) => {
   try {
     const { username, projectName, roleAssigned, fromDate, toDate, totalDays } = req.body;
     // Check if any required field is missing
-    console.log(req.body);
+    console.log(username, projectName, roleAssigned);
+    console.log("Req.body=",req.body);
     if (!username || !projectName || !roleAssigned || !fromDate || !toDate || !totalDays) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Insert project data into the projects table
     const query = `
-      INSERT INTO projects (username, project_name, role_assigned, from_date, to_date, total_days, is_approved)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO projects (username, project_name, role_assigned, from_date, to_date, total_days, is_approved,approver)
+      VALUES ($1, $2, $3, $4, $5, $6, $7,$8)
     `;
-    await pool.query(query, [username, projectName, roleAssigned, fromDate, toDate, totalDays, false]);
+    await pool.query(query, [username, projectName, roleAssigned, fromDate, toDate, totalDays, false,'Ganesh']);
 
     res.status(201).json({ message: 'Project added successfully' });
   } catch (error) {

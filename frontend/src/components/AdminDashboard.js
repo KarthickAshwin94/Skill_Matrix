@@ -37,7 +37,8 @@ const AdminDashboard = () => {
   
 
   return (
-    <div className="admin-dashboard-container">
+    <div className='admin_page'>
+      <div className="admin-dashboard-container">
       <h2>Create User</h2>
       <input type="text" placeholder="Username" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} />
       <input type="email" placeholder="Email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
@@ -50,6 +51,8 @@ const AdminDashboard = () => {
 
       <LogoutButton />
     </div>
+    </div>
+    
   );
 };
 

@@ -18,7 +18,8 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-        <div className="forgot-password-container">
+        <div className='forgot_password'>
+            <div className="forgot-password-container">
             <h2>Forgot Password</h2>
             <form onSubmit={handleResetPassword}>
                 <input type="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -26,6 +27,9 @@ const ForgotPasswordPage = () => {
             </form>
             {message && <p>{message}</p>}
         </div>
+
+        </div>
+        
     );
 };
 

@@ -40,7 +40,9 @@ export default function CertificationsPage() {
   };
 
   return (
-    <div className='certifications-container'>
+    <div className='certification_page'>
+
+<div className='certifications-container'>
       <h2>Add New Certification</h2>
       <form onSubmit={handleSubmit}>
 
@@ -118,5 +120,7 @@ export default function CertificationsPage() {
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     </div>
+    </div>
+    
   );
 }

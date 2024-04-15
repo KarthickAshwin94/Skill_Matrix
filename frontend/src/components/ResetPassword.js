@@ -26,6 +26,7 @@ const ResetPasswordPage = ({ token }) => {
       
 
     return (
+      <div className='reset_password'>
         <div className="reset-password-container">
             <h2>Reset Password</h2>
             <form onSubmit={handleResetPassword}>
@@ -37,6 +38,8 @@ const ResetPasswordPage = ({ token }) => {
             </form>
             {message && <p>{message}</p>}
         </div>
+      </div>
+        
     );
 };
 

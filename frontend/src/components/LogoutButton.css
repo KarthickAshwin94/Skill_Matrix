@@ -3,9 +3,9 @@
   margin-top: 20px;
 }
 
-.logout-button button {
+.logout-button  {
   padding: 12px 24px;
-  background-color: transparent;
+  background-color: #4caf50;
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
   border-radius: 50px;
@@ -17,9 +17,9 @@
   outline: none;
 }
 
-.logout-button button:hover {
-  background-color: var(--primary-color);
-  color: #fff;
+.logout-button:hover {
+ 
+  color:black;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

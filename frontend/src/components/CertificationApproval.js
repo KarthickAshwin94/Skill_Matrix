@@ -79,7 +79,8 @@ const CertificationApproval = () => {
   };
 
   return (
-    <div className='certification-container'>
+    <div className='certification_approval'>
+<div className='certification-container'>
       <h2 className="title">Certification Approver</h2>
 
       <label htmlFor="username">Select Username:</label>
@@ -114,6 +115,8 @@ const CertificationApproval = () => {
       </div>
 
     </div>
+    </div>
+    
   );
 };
 

@@ -39,7 +39,8 @@ const SkillsPage = () => {
   };
 
   return (
-    <div className='login-container'>
+    <div className='skills_page'>
+      <div className='login-container'>
       <h2>Add New Skill</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -88,6 +89,8 @@ const SkillsPage = () => {
         <button type="submit">Submit</button>
       </form>
     </div>
+    </div>
+    
   );
 };  
 

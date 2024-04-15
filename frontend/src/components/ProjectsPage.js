@@ -64,7 +64,8 @@ const ProjectsPage = () => {
   };
 
   return (
-    <div className='projectsContainer'>
+    <div className='projects_page'>
+       <div className='projectsContainer'>
       <h2 className='title'>Add New Project</h2>
       <form onSubmit={handleSubmit} className='form'>
         <div className='formGroup'>
@@ -135,6 +136,8 @@ const ProjectsPage = () => {
         <button type="submit" className='submitButton'>Submit</button>
       </form>
     </div>
+    </div>
+   
   );
 };
 

@@ -1,8 +1,19 @@
-.certifications-container {
+.certification_page{
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #6ab1f7 10%, #a093f6 100%);
+    overflow: hidden;
+}
+.certification_page .certifications-container {
   max-width: 600px;
+  width:300px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 50px;
   border: 1px solid #ccc;
+  background-color:white;
   border-radius: 5px;
 }
 

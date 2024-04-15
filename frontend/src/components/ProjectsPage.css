@@ -1,7 +1,17 @@
-.projectsContainer {
+.projects_page{
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #6ab1f7 10%, #a093f6 100%);
+    overflow: hidden;
+}
+.projects_page .projectsContainer {
   max-width: 600px;
+  width:300px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 50px;
   background-color: #f4f4f4;
   border-radius: 8px;
 }

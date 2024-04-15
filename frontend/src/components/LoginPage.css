@@ -8,12 +8,12 @@
     overflow: hidden;
 }
 
-.login-container {
+.login-page .login-container {
     max-width: 400px;
-    padding: 20px;
+    padding: 50px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #fff;
+    height: 200px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 

@@ -52,9 +52,8 @@ const LoginPage = () => {
                 <input type="text" name="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
                 <input type="password" autoComplete="current-password" name="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button type='submit'>Login</button>
+                <Link to="/forgot-password" className="forgot-password-link">Forgot Password?</Link>
             </form>
-            <Link to="/forgot-password" className="forgot-password-link">Forgot Password?</Link>
-            
             </div> 
     );
 };

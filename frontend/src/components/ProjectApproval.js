@@ -79,7 +79,8 @@ const ProjectsApproval = () => {
   };
 
   return (
-    <div className='projects-container'>
+    <div className='project_approval'>
+      <div className='projects-container'>
       <h2 className="title">Project Approver</h2>
 
       <label htmlFor="username">Select Username:</label>
@@ -115,6 +116,8 @@ const ProjectsApproval = () => {
       </div>
 
     </div>
+    </div>
+    
   );
 };
 

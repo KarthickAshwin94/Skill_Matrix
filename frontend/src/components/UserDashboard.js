@@ -23,7 +23,8 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="user-dashboard">
+    <div className='user_dashboard'>
+      <div className="user-dashboard">
       <h2>Welcome to Your Dashboard, {username}</h2>
       <div className="dashboard-links">
         <button className="dashboard-item" onClick={navigateToSkills}>
@@ -41,6 +42,8 @@ const UserDashboard = () => {
       </div>
       <LogoutButton />
     </div>
+    </div>
+    
   );
 };
 

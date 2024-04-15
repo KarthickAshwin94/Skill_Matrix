@@ -78,7 +78,8 @@ const SkillApprover = () => {
   };
 
   return (
-    <div className='skills-container'>
+    <div className='skill_approval'>
+       <div className='skills-container'>
       <h2 className="title">Skill Approver</h2>
 
       <label htmlFor="username">Select Username:</label>
@@ -113,6 +114,8 @@ const SkillApprover = () => {
       </div>
 
     </div>
+    </div>
+   
   );
 };
 
